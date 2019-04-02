@@ -56,10 +56,17 @@ const processFile = function(asts) {
                         ) {
                             // 绝对路径依赖并且在当前目录范围内
                             const moduleName = path.parentPath.node.id.name;
-                            const modulePath = nodejsPath.relative(
-                                currentPath,
-                                requireModulePath
+                            let modulePath = nodejsPath.join(
+                                nodejsPath.relative(
+                                    nodejsPath.parse(currentPath).dir,
+                                    nodejsPath.parse(requireModulePath).dir
+                                ),
+                                `./${nodejsPath.parse(requireModulePath).base}`
                             );
+                            // 例如./a会被解析成a。需要处理下
+                            if (modulePath[0] !== ".") {
+                                modulePath = "./" + modulePath;
+                            }
                             importArr.push({
                                 moduleName,
                                 modulePath
