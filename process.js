@@ -54,7 +54,7 @@ const processFile = function(asts) {
                                 requireModulePath
                             )
                         ) {
-                            // 绝对路径依赖并且在当前目录范围内  var eipConfig = require('cvm/eip2/common/config') => import eipConfig from "./common/config"
+                            // 绝对路径依赖并且在当前目录范围内
                             const moduleName = path.parentPath.node.id.name;
                             const modulePath = nodejsPath.relative(
                                 currentPath,
@@ -66,7 +66,7 @@ const processFile = function(asts) {
                             });
                             path.parentPath.parentPath.remove();
                         } else if (requireModulePath[0] === ".") {
-                            // 相对路径依赖，把import声明提前 var directConnectEip = require('./directConnectEip') =>  import directConnectEip from "./directConnectEip"
+                            // 相对路径依赖，把import声明提前
 
                             const moduleName = path.parentPath.node.id.name;
                             const modulePath =
