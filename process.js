@@ -38,6 +38,14 @@ const processFile = function(asts) {
                     if (path.node.callee.name === "require") {
                         // 处理require关系
 
+                        const isKeyValueRequire =
+                            path.parentPath.node.key &&
+                            path.parentPath.node.value;
+                        // 有一种要特殊处理的
+                        // var module = {
+                        //     a: require("main/a"),
+                        // };
+
                         // 当前依赖的根路径
                         let currentRootPath =
                             root ||
@@ -54,8 +62,11 @@ const processFile = function(asts) {
                                 requireModulePath
                             )
                         ) {
-                            // 绝对路径依赖并且在当前目录范围内
-                            const moduleName = path.parentPath.node.id.name;
+                            // // 绝对路径依赖并且在当前目录范围内
+                            const moduleName = isKeyValueRequire
+                                ? path.parentPath.node.key.name
+                                : path.parentPath.node.id.name;
+
                             let modulePath = nodejsPath.join(
                                 nodejsPath.relative(
                                     nodejsPath.parse(currentPath).dir,
@@ -71,11 +82,21 @@ const processFile = function(asts) {
                                 moduleName,
                                 modulePath
                             });
-                            path.parentPath.parentPath.remove();
+                            if (isKeyValueRequire) {
+                                path.parentPath
+                                    .get("value")
+                                    .replaceWith(
+                                        path.parentPath.get("key").node
+                                    );
+                            } else {
+                                path.parentPath.parentPath.remove();
+                            }
                         } else if (requireModulePath[0] === ".") {
                             // 相对路径依赖，把import声明提前
 
-                            const moduleName = path.parentPath.node.id.name;
+                            const moduleName = isKeyValueRequire
+                                ? path.parentPath.node.key.name
+                                : path.parentPath.node.id.name;
                             const modulePath =
                                 path.node.arguments[0] &&
                                 path.node.arguments[0].value;
@@ -83,7 +104,15 @@ const processFile = function(asts) {
                                 moduleName,
                                 modulePath
                             });
-                            path.parentPath.parentPath.remove();
+                            if (isKeyValueRequire) {
+                                path.parentPath
+                                    .get("value")
+                                    .replaceWith(
+                                        path.parentPath.get("key").node
+                                    );
+                            } else {
+                                path.parentPath.parentPath.remove();
+                            }
                         } else {
                             // 平台依赖处理 const constants = require('constants') => const constants = seajs.require('constants')
                             path.get("callee").replaceWithSourceString(
