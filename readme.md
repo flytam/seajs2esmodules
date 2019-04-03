@@ -85,6 +85,10 @@ export default {
 -   main/c.js
 
 ```javascript
+import b from "./b";
+var m = {
+    b: b
+};
 export default {
     say() {
         console.log("hello c");
@@ -128,6 +132,4 @@ todo
 1、源码解析
 2、模版文件引入
 
-已知问题
-
-偶发报错
+仍然有 bug。。。因为没有将公司一大坨 seajs 代码成功转通
