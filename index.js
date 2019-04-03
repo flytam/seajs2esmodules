@@ -4,14 +4,8 @@ const traverse = require("@babel/traverse").default;
 const parser = require("@babel/parser");
 const fs = require("fs");
 const path = require("path");
-const fsExitSync = way => {
-    try {
-        fs.accessSync(way, fs.constants.W_OK);
-    } catch (e) {
-        return false;
-    }
-    return true;
-};
+const { fsExitSync, mkdirsSync } = require("./util");
+
 // 输入文件。目前只单文件输入，多文件的话用打包工具把seajs模块文件打包成单文件再调用这个脚本
 const source = fs.readFileSync("./input/input.js", {
     encoding: "utf8"
@@ -35,7 +29,8 @@ traverse(ast, {
     }
 });
 processAst(fileBody).forEach(({ path: outputPath, code }) => {
-    // todo 处理输出路径不存在的情况
+    const { dir } = path.parse(outputPath);
+    mkdirsSync(path.join(output, dir));
     const writeStream = fs.createWriteStream(
         path.join(output, `./`, `${outputPath}.js`),
         "utf8"
