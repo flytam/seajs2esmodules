@@ -5,14 +5,15 @@ const parser = require("@babel/parser");
 const fs = require("fs");
 const path = require("path");
 const { fsExistSync, mkdirsSync } = require("./util");
-
+const { execSync } = require("child_process");
 // 输入文件。目前只单文件输入，多文件的话用打包工具把seajs模块文件打包成单文件再调用这个脚本
-const source = fs.readFileSync("./input/input.js", {
+const source = fs.readFileSync("./input/input1.js", {
     encoding: "utf8"
 });
 
 // 指定输出路径
 const output = "./output";
+execSync("rm -rf " + output);
 if (!fsExistSync(output)) {
     fs.mkdirSync(output);
 }

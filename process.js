@@ -19,6 +19,8 @@ const processFile = function(asts) {
     const newSourceCodes = asts.map(ast => {
         let root = null;
         let currentPath = null;
+        let mainBodyNode = null;
+        let exportDefaultAst = null;
         const importArr = [];
         //console.log(ast)
         //console.log("-----")
@@ -93,7 +95,6 @@ const processFile = function(asts) {
                             }
                         } else if (requireModulePath[0] === ".") {
                             // 相对路径依赖，把import声明提前
-
                             const moduleName = isKeyValueRequire
                                 ? path.parentPath.node.key.name
                                 : path.parentPath.node.id.name;
@@ -132,37 +133,34 @@ const processFile = function(asts) {
                     }
                 }
             },
-            ExpressionStatement: {
+            AssignmentExpression: {
                 enter(path) {
                     if (
-                        t.isAssignmentExpression(path.node.expression) &&
-                        path.node.expression.left.object &&
-                        path.node.expression.left.object.name === "module" &&
-                        path.node.expression.left.property &&
-                        path.node.expression.left.property.name === "exports"
+                        path.get("left.object") &&
+                        path.get("left.object").node.name === "module" &&
+                        path.get("left.property") &&
+                        path.get("left.property").node.name === "exports"
                     ) {
                         // 处理module.exports类型的导出
-                        const ast = builExportDefaultTemplate({
-                            EXPORTOBJECT: path.node.expression.right
+                        exportDefaultAst = builExportDefaultTemplate({
+                            EXPORTOBJECT: path.node.right
                         });
-                        path.replaceWith(ast);
-                    }
-
-                    if (
-                        t.isAssignmentExpression(path.node.expression) &&
-                        path.node.expression.left.object &&
-                        path.node.expression.left.object.name === "exports" &&
-                        path.node.expression.left.property &&
-                        path.node.expression.left.property.name
+                        // var a=(module.exports=b) 这种也要处理
+                        path.replaceWith(path.get("right").node);
+                    } else if (
+                        path.get("left.object") &&
+                        path.get("left.object").node.name === "exports" &&
+                        path.get("left.property") &&
+                        path.get("left.property").node.name
                     ) {
                         // 处理exports.x类型的导出
-                        const variable = path.node.expression.left.property;
-                        const rightExpression = path.node.expression.right;
+                        const variable = path.node.left.property;
+                        const rightExpression = path.node.right;
                         const ast = buildExportTemplate({
                             VARIABLE: variable,
                             RIGHTEXPRESSION: rightExpression
                         });
-                        path.replaceWith(ast);
+                        path.parentPath.replaceWith(ast);
                     }
                 }
             },
@@ -183,6 +181,11 @@ const processFile = function(asts) {
                             });
                             path.node.body.unshift(ast);
                         });
+
+                    // export default 放在最底部，最多只有一个
+                    if (exportDefaultAst) {
+                        path.node.body.push(exportDefaultAst);
+                    }
                 }
             }
         });
