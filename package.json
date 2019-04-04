@@ -1,19 +1,22 @@
 {
-  "name": "seajs2esmodule",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "flytam",
-  "license": "MIT",
-  "dependencies": {
-    "@babel/core": "^7.4.0",
-    "@babel/generator": "^7.4.0",
-    "@babel/parser": "^7.4.2",
-    "@babel/template": "^7.4.0",
-    "@babel/traverse": "^7.4.0",
-    "@babel/types": "^7.4.0"
-  }
+    "name": "seajs2esmodule",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "author": "flytam",
+    "license": "MIT",
+    "dependencies": {
+        "@babel/core": "^7.4.0",
+        "@babel/generator": "^7.4.0",
+        "@babel/parser": "^7.4.2",
+        "@babel/template": "^7.4.0",
+        "@babel/traverse": "^7.4.0",
+        "@babel/types": "^7.4.0"
+    },
+    "devDependencies": {
+        "jest": "^24.7.1"
+    }
 }

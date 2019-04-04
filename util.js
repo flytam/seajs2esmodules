@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const fsExitSync = way => {
+const fsExistSync = way => {
     try {
         fs.accessSync(way, fs.constants.W_OK);
     } catch (e) {
@@ -10,7 +10,7 @@ const fsExitSync = way => {
 };
 
 const mkdirsSync = dirname => {
-    if (fsExitSync(dirname)) {
+    if (fsExistSync(dirname)) {
         return true;
     } else {
         if (mkdirsSync(path.dirname(dirname))) {
@@ -22,5 +22,5 @@ const mkdirsSync = dirname => {
 
 module.exports = {
     mkdirsSync,
-    fsExitSync
+    fsExistSync
 };

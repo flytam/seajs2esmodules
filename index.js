@@ -4,7 +4,7 @@ const traverse = require("@babel/traverse").default;
 const parser = require("@babel/parser");
 const fs = require("fs");
 const path = require("path");
-const { fsExitSync, mkdirsSync } = require("./util");
+const { fsExistSync, mkdirsSync } = require("./util");
 
 // 输入文件。目前只单文件输入，多文件的话用打包工具把seajs模块文件打包成单文件再调用这个脚本
 const source = fs.readFileSync("./input/input.js", {
@@ -13,7 +13,7 @@ const source = fs.readFileSync("./input/input.js", {
 
 // 指定输出路径
 const output = "./output";
-if (!fsExitSync(output)) {
+if (!fsExistSync(output)) {
     fs.mkdirSync(output);
 }
 const processAst = require("./process");
