@@ -1,6 +1,6 @@
 ### seajs 模块转化到 es 风格模块的脚本
 
-@author [flytam]()
+@author [flytam](https://github.com/flytam)
 
 ```javascript
 // seajs模块
